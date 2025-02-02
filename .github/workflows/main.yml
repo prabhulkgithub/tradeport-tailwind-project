@@ -12,7 +12,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -25,18 +24,12 @@ jobs:
     - name: Install dependencies
       run: npm install
 
+    - name: Run tests
+      run: npm test
 
     - name: Build the application
       run: npm run build
 
-    - name: Build Docker image
-      run: docker build -t tradeport-tailwind-project .
-
-    - name: Push Docker image to GitHub Packages
-      run: |
-        echo ${{ secrets.DOCKER_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-        docker tag tradeport-tailwind-project ghcr.io/${{ github.repository }}/tradeport-tailwind-project:latest
-        docker push ghcr.io/${{ github.repository }}/tradeport-tailwind-project:latest
 
   deploy:
     runs-on: ubuntu-latest
