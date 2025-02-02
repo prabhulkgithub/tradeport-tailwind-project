@@ -38,7 +38,8 @@ jobs:
 
     - name: Deploy to Railway
       run: |
-        curl -o railway https://cli.railway.app
+        curl -sSL -o railway https://cli.railway.app
         chmod +x railway
         ./railway login --token ${{ secrets.RAILWAY_TOKEN }}
         ./railway up --project tradeport-tailwind-project --service web
+
