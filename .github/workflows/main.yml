@@ -33,7 +33,7 @@ jobs:
 
     - name: Push Docker image to GitHub Packages
       run: |
-        echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        echo ${{ secrets.DOCKER_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
         docker tag tradeport-tailwind-project ghcr.io/${{ github.repository }}/tradeport-tailwind-project:latest
         docker push ghcr.io/${{ github.repository }}/tradeport-tailwind-project:latest
 
