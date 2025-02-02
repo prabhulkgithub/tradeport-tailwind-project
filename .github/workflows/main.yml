@@ -1,0 +1,55 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 18
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run tests
+      run: npm test
+
+    - name: Build the application
+      run: npm run build
+
+    - name: Build Docker image
+      run: docker build -t tradeport-tailwind-project .
+
+    - name: Push Docker image to GitHub Packages
+      run: |
+        echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        docker tag tradeport-tailwind-project ghcr.io/${{ github.repository }}/tradeport-tailwind-project:latest
+        docker push ghcr.io/${{ github.repository }}/tradeport-tailwind-project:latest
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Deploy to Railway
+      run: |
+        curl -o railway https://cli.railway.app
+        chmod +x railway
+        ./railway login --token ${{ secrets.RAILWAY_TOKEN }}
+        ./railway up --project tradeport-tailwind-project --service web
